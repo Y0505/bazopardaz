@@ -21,6 +21,11 @@ function rubikaDebug(string $event, array $context = []): void {
     }
 }
 
+// Keep compatibility with the existing order-storage error call.
+function rubikaLog(string $message): void {
+    rubikaDebug('legacy_log', ['message' => $message]);
+}
+
 rubikaDebug('01_request_received', [
     'method' => $_SERVER['REQUEST_METHOD'] ?? 'UNKNOWN',
     'uri_path' => parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH),
@@ -145,7 +150,7 @@ function rubikaApi(string $method, array $params = []): array {
 }
 
 function sendText(string $chatId, string $text, ?array $keyboard = null): void {
-    rubikaDebug('send_message_attempt', ['chat_id_present' => $chatId !== '', 'text_length' => mb_strlen($text, 'UTF-8'), 'keyboard' => $keyboard !== null]);
+    rubikaDebug('send_message_attempt', ['chat_id_present' => $chatId !== '', 'text_length' => strlen($text), 'keyboard' => $keyboard !== null]);
     $args = ['chat_id' => $chatId, 'text' => $text];
     if ($keyboard !== null) $args['inline_keypad'] = ['rows' => $keyboard];
     rubikaApi('sendMessage', $args);
@@ -220,7 +225,7 @@ rubikaDebug('08_update_parsed', [
     'inline_type' => $inline['type'] ?? null,
     'chat_id_present' => $chatId !== '',
     'user_id_present' => $userId !== '',
-    'text' => mb_substr($text, 0, 80, 'UTF-8'),
+    'text' => substr($text, 0, 160),
     'button_id' => $buttonId,
 ]);
 
@@ -378,7 +383,7 @@ if (is_array($file) || str_contains(strtolower((string)($message['mime_type'] ??
 }
 
 if ($text !== '') {
-    rubikaDebug('11_other_text_received', ['text' => mb_substr($text, 0, 80, 'UTF-8')]);
+    rubikaDebug('11_other_text_received', ['text' => substr($text, 0, 160)]);
     $state = $data['users'][$userId] ?? [];
     if (($state['stage'] ?? '') === 'awaiting_receipt') {
         sendText($chatId, 'لطفاً تصویر رسید را به‌صورت عکس ارسال کنید.');
