@@ -16,15 +16,19 @@ A separate native-PHP Rubika bot endpoint matching the current Bale demo flow. I
 Upload this folder as:
 `public_html/wordpressPartnerRubika/`
 
-Keep the secret config outside the public web root:
+Keep the config outside the public web root:
 `/home/USERNAME/bot/wordpressPartnerRubika/config.php`
 
-Copy `config.example.php` to that private path and fill in the Rubika bot token, a long random webhook secret, and optionally the admin chat ID.
+The private config needs:
+- `bot_token`: the Rubika bot token
+- `admin_chat_id`: optional admin chat ID
 
-The webhook expects:
-`https://YOUR-DOMAIN/wordpressPartnerRubika/webhook.php?key=YOUR_WEBHOOK_SECRET`
+The webhook URL is:
+`https://YOUR-DOMAIN/wordpressPartnerRubika/webhook.php`
 
-Ensure PHP cURL and JSON extensions are enabled and the folder is writable by PHP so it can create `data.json` and `webhook-log.php`.
+No webhook secret query parameter is required in this version.
+
+Ensure PHP cURL and JSON extensions are enabled and the folder is writable by PHP so it can create `data.json` and `webhook-debug.log`.
 
 ## Register the webhook
 Rubika Bot API endpoint:
@@ -33,17 +37,14 @@ Rubika Bot API endpoint:
 JSON body:
 ```json
 {
-  "url": "https://YOUR-DOMAIN/wordpressPartnerRubika/webhook.php?key=YOUR_WEBHOOK_SECRET",
+  "url": "https://YOUR-DOMAIN/wordpressPartnerRubika/webhook.php",
   "type": "ReceiveUpdate"
 }
 ```
 
-The API call can be made from a private PHP setup script or an API client. Never put the bot token in a public URL, source file, screenshot, or chat message.
+The API call must be sent as POST with a JSON body. Never put the bot token in a public URL, source file, screenshot, or chat message.
 
-## Test
-1. Open the bot in Rubika and send `/start`.
-2. Choose the product, select a size, and confirm.
-3. Send a test image as the receipt.
-4. Check `data.json` and the optional admin chat.
+## Diagnostics
+The webhook writes structured diagnostic events to `webhook-debug.log`, including request arrival, config loading, JSON parsing, update extraction, command detection, and Rubika API sendMessage results. The log is denied from public HTTP access by `.htaccess`.
 
-A successful HTTP response from `updateBotEndpoints` and a real test message are required before considering the webhook active.
+After testing, inspect the log through cPanel File Manager. Do not share bot tokens or full private configuration.
