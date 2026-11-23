@@ -1,0 +1,58 @@
+/* Bazopardaz — landing page only (css/pages/home.css). Uses existing tokens, so dark and light themes both work. */
+
+/* Hero: text + live-demo preview, so a real project is visible in the first screen */
+.home-hero__inner { display: grid; gap: 40px; align-items: center; }
+.home-hero__text { text-align: center; }
+.home-hero .btn-row, .home-hero .trust-row, .home-platforms { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+.home-hero .trust-row { gap: 8px 20px; }
+.home-platforms { margin-top: 22px; gap: 8px; }
+.home-platforms a { font-size: .85rem; padding: 4px 12px; border-radius: var(--radius-pill); border: 1px solid var(--border); color: var(--text-secondary); background: var(--bg-card); transition: border-color var(--transition), color var(--transition); }
+.home-platforms a:hover, .home-platforms a:focus-visible { border-color: var(--border-hover); color: var(--text-primary); }
+
+.demo-peek { position: relative; display: block; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--bg-card); overflow: hidden; }
+.demo-peek img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; }
+.demo-peek__body { padding: 16px 20px 18px; }
+.demo-peek__body strong { display: block; font-size: 1rem; color: var(--text-primary); margin-bottom: 4px; }
+.demo-peek__body span { font-size: .88rem; color: var(--text-secondary); }
+.demo-peek__badge { position: absolute; top: 12px; inset-inline-start: 12px; }
+.demo-peek__links { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 10px; font-size: .88rem; font-weight: 600; }
+
+@media (min-width: 960px) {
+  .home-hero__inner { grid-template-columns: 1.1fr 1fr; gap: 56px; }
+  .home-hero__text { text-align: start; }
+  .home-hero .btn-row, .home-hero .trust-row, .home-platforms { justify-content: flex-start; }
+}
+
+/* Portfolio: one wide featured project, then the rest; 5 cards fill the grid with no gaps */
+.home-portfolio .portfolio-card { display: flex; flex-direction: column; }
+.home-portfolio .portfolio-card-body { flex: 1; display: flex; flex-direction: column; }
+.home-portfolio .portfolio-card-body .card-more { margin-top: auto; padding-top: 14px; }
+.portfolio-card__panel { display: grid; place-items: center; aspect-ratio: 16 / 10; background: var(--accent-dim); color: var(--accent); }
+.portfolio-card__panel .icon { width: 56px; height: 56px; }
+@media (min-width: 640px) {
+  .home-portfolio .portfolio-card--wide { grid-column: 1 / -1; flex-direction: row; }
+  .home-portfolio .portfolio-card--wide .portfolio-card-img { width: 48%; aspect-ratio: auto; height: 100%; min-height: 260px; }
+  .home-portfolio .portfolio-card--wide .portfolio-card-body { padding: 32px; justify-content: center; }
+  .home-portfolio .portfolio-card--wide h3 { font-size: 1.35rem; }
+}
+@media (min-width: 1000px) { .home-portfolio .portfolio-card--wide { grid-column: span 2; } }
+
+/* Services: each card shows what it is good for and links to a real example */
+.svc-uses { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.svc-uses li { font-size: .78rem; color: var(--text-muted); background: var(--accent-dim); padding: 2px 8px; border-radius: 4px; }
+.svc-example { position: relative; z-index: 2; display: block; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); font-size: .88rem; color: var(--text-secondary); }
+.svc-example a { font-weight: 600; }
+.services-grid .card { display: flex; flex-direction: column; }
+.services-grid .card .card-more { margin-top: auto; padding-top: 14px; }
+@media (max-width: 480px) {
+  .services-grid .card { display: grid; }
+  .svc-uses, .svc-example { grid-column: 2; }
+}
+
+/* "At a glance" facts: short self-contained answers, also readable by AI search */
+.glance { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin: 0; }
+.glance div { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px 18px; }
+.glance dt { font-size: .85rem; color: var(--text-muted); margin-bottom: 4px; }
+.glance dd { margin: 0; color: var(--text-primary); line-height: 1.8; }
+
+@media (prefers-reduced-motion: reduce) { .home-platforms a { transition: none; } }
