@@ -241,12 +241,12 @@ if (isset($update['callback_query']) && is_array($update['callback_query'])) {
             ]);
         } else {
             $rows = [];
-            foreach (array_slice($userOrders, -10) as $order) {
+            foreach (array_slice($userOrders, -5) as $order) {
                 $orderId = (string)($order['order_id'] ?? '');
                 $rows[] = [['text' => '🧾 ' . $orderId . ' | سایز ' . (string)($order['size'] ?? '-'), 'callback_data' => 'order_' . $orderId]];
             }
             $rows[] = [['text' => '↩️ منوی اصلی', 'callback_data' => 'restart']];
-            editCallbackMessage($callback, '📦 *سفارش‌های شما*\n\nبرای مشاهده جزئیات، یک سفارش را انتخاب کنید:', $token, $apiBase, $rows);
+            editCallbackMessage($callback, "📦 *سفارش‌های شما*\n\n۵ سفارش اخیر شما نمایش داده شده است.\nبرای مشاهده جزئیات، یک سفارش را انتخاب کنید:", $token, $apiBase, $rows);
         }
         exit;
     }
@@ -273,7 +273,15 @@ if (isset($update['callback_query']) && is_array($update['callback_query'])) {
         exit;
     }
     if ($callbackData === 'demo_support') {
-        editCallbackMessage($callback, 'برای پشتیبانی و سفارش ربات مشابه، به @botsdeveloper پیام دهید.', $token, $apiBase);
+        $supportText = "💬 *پشتیبانی و ارتباط با بازوپرداز*\n\n"
+            . "برای سفارش ربات اختصاصی یا دریافت راهنمایی، از راه‌های زیر با ما در ارتباط باشید:\n\n"
+            . "👨🏻‍💻 *پشتیبانی و سفارش ربات:* @botsdeveloper\n"
+            . "📢 *کانال بازوپرداز:* @vipbots\n"
+            . "🌐 *وب‌سایت:* [bazopardaz.ir](https://bazopardaz.ir)\n\n"
+            . "_طراحی‌شده توسط بازوپرداز_";
+        editCallbackMessage($callback, $supportText, $token, $apiBase, [
+            [['text' => '↩️ بازگشت به منوی اصلی', 'callback_data' => 'restart']],
+        ]);
         exit;
     }
     if ($callbackData === 'restart') {
