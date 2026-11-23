@@ -1,4 +1,4 @@
 Options -Indexes
-<FilesMatch "^(data\.json|webhook-log\.php)$">
+<FilesMatch "^(data\.json|webhook-log\.php|webhook-debug\.log|set-webhook\.php|test-post\.php)$">
     Require all denied
 </FilesMatch>
