@@ -157,7 +157,7 @@ function sendText(string $chatId, string $text, ?array $keyboard = null): void {
 }
 
 function button(string $text, string $id): array {
-    return ['type' => 'Simple', 'button_text' => $text, 'button_id' => $id];
+    return ['id' => $id, 'type' => 'Simple', 'button_text' => $text];
 }
 function row(array $buttons): array {
     return ['buttons' => $buttons];
@@ -272,7 +272,7 @@ if ($buttonId !== '') {
         exit;
     }
     if ($buttonId === 'support') {
-        sendText($chatId, 'برای پشتیبانی با مدیر فروشگاه در ارتباط باشید.', menuKeyboard());
+        sendText($chatId, 'برای پشتیبانی و سفارش ربات مشابه، به @botsdeveloper پیام دهید.', menuKeyboard());
         exit;
     }
     if (preg_match('/^size_(\d+)_(\d+)$/', $buttonId, $m)) {
