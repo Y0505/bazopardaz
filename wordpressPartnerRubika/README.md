@@ -42,6 +42,15 @@ JSON body:
 }
 ```
 
+برای دریافت کلیک دکمه‌های شیشه‌ای نیز همین درخواست را یک بار دیگر با نوع زیر ارسال کنید:
+
+```json
+{
+  "url": "https://YOUR-DOMAIN/wordpressPartnerRubika/webhook.php",
+  "type": "ReceiveInlineMessage"
+}
+```
+
 The API call must be sent as POST with a JSON body. Never put the bot token in a public URL, source file, screenshot, or chat message.
 
 ## Diagnostics
