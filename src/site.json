@@ -1,0 +1,30 @@
+{
+  "base": "https://bazopardaz.ir",
+  "name": "بازوپرداز",
+  "year_fa": "۱۴۰۵",
+  "lastmod": "2026-11-03",
+  "bale": "https://ble.ir/botsdeveloper",
+  "telegram": "https://t.me/VipBotDeveloper",
+  "default_og": "/images/og-image-1200.jpg",
+  "default_og_alt": "بازوپرداز؛ طراحی ربات تلگرام، ربات بله و وبسایت اختصاصی",
+  "org_description": "طراحی و توسعه اختصاصی ربات تلگرام، ربات بله، ربات روبیکا، ربات دیسکورد، مینی‌اپ و وبسایت؛ با ارتباط مستقیم با توسعه‌دهنده.",
+  "nav": [
+    {"label": "خدمات", "href": "/services/"},
+    {"label": "نمونه‌کارها", "href": "/portfolio/"},
+    {"label": "درباره ما", "href": "/about/"}
+  ],
+  "footer_services": [
+    {"label": "ربات تلگرام", "href": "/services/telegram-bot/"},
+    {"label": "ربات بله", "href": "/services/bale-bot/"},
+    {"label": "ربات روبیکا", "href": "/services/rubika-bot/"},
+    {"label": "ربات دیسکورد", "href": "/services/discord-bot/"},
+    {"label": "طراحی وبسایت", "href": "/services/web-development/"},
+    {"label": "مینی‌اپ", "href": "/services/mini-app/"}
+  ],
+  "footer_links": [
+    {"label": "همه خدمات", "href": "/services/"},
+    {"label": "نمونه‌کارها", "href": "/portfolio/"},
+    {"label": "درباره ما", "href": "/about/"},
+    {"label": "تماس با ما", "href": "/contact/"}
+  ]
+}

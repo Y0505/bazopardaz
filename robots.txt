@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+Disallow: /404.html
+Disallow: /api/
+Disallow: /admin/
+Disallow: /cron/
+Disallow: /includes/
+Disallow: /secure/
+Disallow: /database/
+Disallow: /blog-data/
+Disallow: /wordpressPartner/
+
+Sitemap: https://bazopardaz.ir/sitemap.xml

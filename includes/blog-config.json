@@ -1,0 +1,99 @@
+{
+ "base": "https://bazopardaz.ir",
+ "name": "بازوپرداز",
+ "default_og": "/images/og-image-1200.jpg",
+ "default_og_alt": "بازوپرداز؛ طراحی ربات تلگرام، ربات بله و وبسایت اختصاصی",
+ "blog_description": "مقاله‌های کاربردی بازوپرداز دربارهٔ ساخت ربات تلگرام و بله، مینی‌اپ و وبسایت: هزینه، انتخاب پلتفرم و نکات اجرایی برای کسب‌وکارها.",
+ "index": {
+  "title": "مقالات ربات، مینی‌اپ و وبسایت | بازوپرداز",
+  "description": "مقاله‌های کاربردی بازوپرداز دربارهٔ ساخت ربات تلگرام و بله، مینی‌اپ و وبسایت: هزینه، انتخاب پلتفرم و نکات اجرایی برای کسب‌وکارها.",
+  "crumbs": [
+   [
+    "خانه",
+    "/"
+   ],
+   [
+    "مقالات",
+    null
+   ]
+  ]
+ },
+ "services": [
+  {
+   "label": "خدمت ساخت ربات تلگرام",
+   "href": "/services/telegram-bot/",
+   "cta": "telegram_bot"
+  },
+  {
+   "label": "خدمت ساخت ربات بله",
+   "href": "/services/bale-bot/",
+   "cta": "bale_bot"
+  },
+  {
+   "label": "خدمت ساخت ربات روبیکا",
+   "href": "/services/rubika-bot/",
+   "cta": "rubika_bot"
+  },
+  {
+   "label": "خدمت ساخت ربات دیسکورد",
+   "href": "/services/discord-bot/",
+   "cta": "discord_bot"
+  },
+  {
+   "label": "خدمت ساخت مینی‌اپ",
+   "href": "/services/mini-app/",
+   "cta": "mini_app"
+  },
+  {
+   "label": "خدمت طراحی وبسایت",
+   "href": "/services/web-development/",
+   "cta": "website"
+  }
+ ],
+ "cta_types": {
+  "telegram_bot": "ربات تلگرام",
+  "bale_bot": "ربات بله",
+  "rubika_bot": "ربات روبیکا",
+  "discord_bot": "ربات دیسکورد",
+  "mini_app": "مینی‌اپ تلگرام",
+  "website": "طراحی وبسایت",
+  "automation": "اتوماسیون / API",
+  "other": "عمومی"
+ },
+ "templates": {
+  "icon": "<svg class=\"icon\" width=\"{{w}}\" height=\"{{h}}\" aria-hidden=\"true\" focusable=\"false\"><use href=\"#i-{{name}}\"/></svg>",
+  "card": "<article class=\"post-card card--link{{featured}}\" data-cat=\"{{cat}}\"><div class=\"post-card-cover {{tone}}\" aria-hidden=\"true\">{{icon}}</div><div class=\"post-card-body\"><span class=\"tag\">{{category}}</span><h3><a href=\"{{url}}\" class=\"card-link\">{{title}}</a></h3><p>{{excerpt}}</p><div class=\"post-card-meta\"><time datetime=\"{{published}}\">{{date}}</time><span aria-hidden=\"true\">·</span><span>{{minutes}} دقیقه مطالعه</span></div></div></article>",
+  "chip": "<button type=\"button\" class=\"chip-btn\" data-filter=\"{{key}}\" aria-pressed=\"{{pressed}}\">{{label}}</button>",
+  "index": "<div class=\"blog-filter\" role=\"group\" aria-label=\"دسته‌بندی مقالات\">{{chips}}</div><div class=\"blog-grid\" id=\"blogGrid\">{{cards}}</div><p class=\"blog-empty\" id=\"blogEmpty\" hidden>مقاله‌ای در این دسته نیست.</p>",
+  "latest": "<div class=\"blog-grid blog-grid--home reveal\">{{cards}}</div>",
+  "faq_item": "<details class=\"faq-item\"><summary class=\"faq-trigger\"><span>{{q}}</span>{{icon}}</summary><div class=\"faq-answer\"><div class=\"faq-answer-inner\">{{a}}</div></div></details>",
+  "faq_section": "\n<h2 id=\"faq\">سوالات متداول</h2>\n<div class=\"post-faq\">{{items}}</div>",
+  "toc_item": "<li><a href=\"#{{id}}\">{{text}}</a></li>",
+  "updated": "<span aria-hidden=\"true\">·</span><span>به‌روزرسانی: <time datetime=\"{{updated}}\">{{updatedfa}}</time></span>",
+  "service_btn": "<a href=\"{{href}}\" class=\"btn btn--outline\">{{label}}</a>",
+  "post_body": "<div class=\"reading-progress\" id=\"readingProgress\" aria-hidden=\"true\"><span></span></div>\n<article class=\"post\">\n<header class=\"post-header\"><div class=\"container container--post\"><a class=\"post-cat\" href=\"/blog/\">{{cat}}</a><h1>{{title}}</h1><p class=\"post-lead\">{{excerpt}}</p><div class=\"post-meta\"><span class=\"post-author\"><span class=\"avatar\" aria-hidden=\"true\">ی</span>یاسر</span><span aria-hidden=\"true\">·</span><time datetime=\"{{pub}}\">{{pubfa}}</time>{{updated}}<span aria-hidden=\"true\">·</span><span>{{min}} دقیقه مطالعه</span></div></div></header>\n<div class=\"container post-layout\"><aside class=\"post-toc\"><nav aria-label=\"فهرست مطالب\"><details class=\"toc-box\" open id=\"tocBox\"><summary>فهرست مطالب</summary><ol>{{toc}}</ol></details></nav></aside><div class=\"post-body\">{{body}}</div></div>\n<div class=\"container container--post post-end\"><div class=\"share-row\"><span>اگر مفید بود، برای دیگران بفرستید:</span><button type=\"button\" class=\"btn btn--outline\" id=\"copyLink\" data-copied=\"لینک کپی شد ✓\">کپی لینک</button><button type=\"button\" class=\"btn btn--outline\" id=\"nativeShare\" hidden>اشتراک‌گذاری</button><a class=\"btn btn--outline\" href=\"https://t.me/share/url?url={{urlq}}&amp;text={{titleq}}\" target=\"_blank\" rel=\"noopener\">تلگرام</a></div><aside class=\"author-card\"><span class=\"avatar avatar--lg\" aria-hidden=\"true\">ی</span><div><p class=\"author-name\">یاسر</p><p>توسعه‌دهندهٔ ربات و وبسایت در بازوپرداز. این مقاله‌ها را از تجربهٔ پروژه‌های واقعی می‌نویسم. <a href=\"/about/\">دربارهٔ من</a></p></div></aside><div class=\"cta-box\"><h2>می‌خواهید این را برای کسب‌وکار خودتان بسازیم؟</h2><p>ایده‌تان را بنویسید؛ مشاورهٔ اولیه رایگان است و پس از بررسی، زمان و هزینهٔ تقریبی را اعلام می‌کنم.</p><div class=\"btn-group\"><a href=\"/contact/#type={{cta}}\" class=\"btn btn--primary btn--lg\">شروع پروژه {{arrow}}</a>{{service}}</div></div></div>\n<section class=\"section section--sm bg-alt post-related\"><div class=\"container\"><h2 class=\"ta-center mb-24\">مقاله‌های مرتبط</h2><div class=\"blog-grid blog-grid--related\">{{rel}}</div></div></section>\n</article>\n",
+  "breadcrumb": "<div class=\"container\"><nav class=\"breadcrumb\" aria-label=\"مسیر ناوبری\"><ol>{{items}}</ol></nav></div>\n",
+  "crumb_link": "<li>{{sep}}<a href=\"{{href}}\">{{label}}</a></li>",
+  "crumb_last": "<li>{{sep}}<span aria-current=\"page\">{{label}}</span></li>",
+  "social": "<meta property=\"og:type\" content=\"{{type}}\">\n<meta property=\"og:site_name\" content=\"{{site}}\">\n<meta property=\"og:locale\" content=\"fa_IR\">\n<meta property=\"og:title\" content=\"{{title}}\">\n<meta property=\"og:description\" content=\"{{description}}\">\n<meta property=\"og:url\" content=\"{{url}}\">\n<meta property=\"og:image\" content=\"{{image}}\">\n<meta property=\"og:image:width\" content=\"{{w}}\">\n<meta property=\"og:image:height\" content=\"{{h}}\">\n<meta property=\"og:image:alt\" content=\"{{alt}}\">\n{{article}}<meta name=\"twitter:card\" content=\"summary_large_image\">\n<meta name=\"twitter:title\" content=\"{{title}}\">\n<meta name=\"twitter:description\" content=\"{{description}}\">\n<meta name=\"twitter:image\" content=\"{{image}}\">\n<meta name=\"twitter:image:alt\" content=\"{{alt}}\">\n",
+  "article_tags": "<meta property=\"article:published_time\" content=\"{{published}}\">\n<meta property=\"article:modified_time\" content=\"{{updated}}\">\n<meta property=\"article:section\" content=\"{{section}}\">\n",
+  "crumb_sep": "<svg class=\"icon\" width=\"14\" height=\"14\" aria-hidden=\"true\" focusable=\"false\"><use href=\"#i-chevron-left\"/></svg>"
+ },
+ "icons": {
+  "doc": "سند",
+  "cart": "سبد خرید",
+  "browser": "وب",
+  "mobile": "موبایل",
+  "chat": "پیام‌رسان",
+  "comments": "گفتگو",
+  "users": "کاربران",
+  "code": "کد",
+  "sliders": "تنظیمات",
+  "book": "آموزش",
+  "bell": "اعلان",
+  "shield": "امنیت",
+  "clock": "زمان",
+  "send": "تلگرام",
+  "phone": "تلفن"
+ }
+}

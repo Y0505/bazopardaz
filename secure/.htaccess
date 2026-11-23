@@ -1,0 +1,10 @@
+# Block direct HTTP access to configuration files
+# This prevents the Bale token and database credentials from being exposed
+
+# Deny all web access to this directory
+Deny from all
+
+# Alternative for Apache 2.4+
+<IfModule mod_authz_core.c>
+    Require all denied
+</IfModule>

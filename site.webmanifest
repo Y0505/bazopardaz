@@ -1,0 +1,17 @@
+{
+  "name": "بازوپرداز",
+  "short_name": "بازوپرداز",
+  "description": "طراحی و توسعه اختصاصی ربات تلگرام، ربات بله، مینی‌اپ و وبسایت",
+  "lang": "fa",
+  "dir": "rtl",
+  "start_url": "/",
+  "scope": "/",
+  "icons": [
+    { "src": "/images/favicon-180x180.png", "sizes": "180x180", "type": "image/png" },
+    { "src": "/images/logo-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/images/favicon-48x48.png", "sizes": "48x48", "type": "image/png" }
+  ],
+  "theme_color": "#0b0b14",
+  "background_color": "#0b0b14",
+  "display": "standalone"
+}

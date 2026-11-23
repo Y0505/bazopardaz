@@ -1,0 +1,44 @@
+# ---------------------------------------------------------------------------
+# SUGGESTED root .htaccess  (public_html/.htaccess)
+# The zip you sent had no root .htaccess, so I did NOT put one in the project: your live server may
+# already have one (PHP handler lines from cPanel, redirects...). MERGE these blocks into it; don't replace it.
+# Test after each block. Remove the redirect blocks if you use Cloudflare "Always HTTPS" / www rules already.
+# ---------------------------------------------------------------------------
+
+Options -Indexes
+ErrorDocument 404 /404.html            # real 404 status for missing pages (important for SEO, avoids soft-404s)
+
+# --- 1) One canonical host: https + no-www (matches every canonical tag on the site) ---
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteCond %{HTTPS} off [OR]
+RewriteCond %{HTTP_HOST} ^www\. [NC]
+RewriteRule ^ https://bazopardaz.ir%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+# --- 2) Don't serve internal/documentation files ---
+<FilesMatch "\.(md|sql|log)$|^config\.example\.php$">
+    Require all denied
+</FilesMatch>
+
+# --- 3) Compression ---
+<IfModule mod_deflate.c>
+AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json image/svg+xml application/xml text/xml
+</IfModule>
+
+# --- 4) Browser caching. CSS/JS URLs carry ?v=<hash>, so they can be cached for a long time ---
+<IfModule mod_expires.c>
+ExpiresActive On
+ExpiresByType text/css "access plus 1 year"
+ExpiresByType application/javascript "access plus 1 year"
+ExpiresByType image/png "access plus 1 year"
+ExpiresByType image/jpeg "access plus 1 year"
+ExpiresByType image/webp "access plus 1 year"
+ExpiresByType text/html "access plus 0 seconds"
+</IfModule>
+
+# --- 5) Basic security headers ---
+<IfModule mod_headers.c>
+Header always set X-Content-Type-Options "nosniff"
+Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>

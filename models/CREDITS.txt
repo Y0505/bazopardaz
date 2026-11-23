@@ -1,0 +1,10 @@
+noctorn-runner.glb — 3D model credits
+=====================================
+Model      : sneaker ("Noctorn Runner" concept)
+Created    : <creator / title / source URL: fill in from the model's Meshy page>
+Made with  : Meshy (https://www.meshy.ai)
+License    : Creative Commons Attribution 4.0 International (CC BY 4.0)
+             https://creativecommons.org/licenses/by/4.0/
+Changes    : textures re-encoded (JPEG) and vertex normals/UVs stored as normalised 16-bit integers
+             to reduce file size. Geometry itself is unchanged.
+Disclaimer : provided "as is", without warranties of any kind (see the license).

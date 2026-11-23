@@ -1,0 +1,93 @@
+{
+ "title": "تماس با ما و ثبت درخواست پروژه | بازوپرداز",
+ "description": "درخواست پروژه ربات یا وبسایت خود را ثبت کنید یا در بله و تلگرام مشاوره اولیه رایگان بگیرید. پس از بررسی، زمان و هزینه تقریبی اعلام می‌شود.",
+ "robots": "index, follow",
+ "path": "/contact/",
+ "schema": [],
+ "scripts": [
+  "contact"
+ ],
+ "hide_cta_bar": true,
+ "ptype": "ContactPage",
+ "crumbs": [
+  [
+   "خانه",
+   "/"
+  ],
+  [
+   "تماس با ما",
+   null
+  ]
+ ]
+}
+<!--/meta-->
+<div class="page-header"><div class="container">
+<h1>تماس با ما</h1>
+<p class="lead">ایده یا نیاز پروژه خود را توضیح دهید. پس از بررسی، زمان و هزینه تقریبی را اعلام می‌کنم و مسیر اجرا مشخص می‌شود.</p>
+<div class="trust-row mt-20">
+<div class="trust-item"><svg class="icon" width="18" height="18" aria-hidden="true" focusable="false"><use href="#i-check"/></svg> مشاوره اولیه رایگان</div>
+<div class="trust-item"><svg class="icon" width="18" height="18" aria-hidden="true" focusable="false"><use href="#i-check"/></svg> پاسخ‌گویی پس از بررسی</div>
+<div class="trust-item"><svg class="icon" width="18" height="18" aria-hidden="true" focusable="false"><use href="#i-check"/></svg> بدون تعهد</div>
+</div>
+</div></div>
+
+<section class="section" id="request"><div class="container container--narrow">
+
+<div class="card form-card reveal">
+<div class="form-head">
+<div class="round-icon"><svg class="icon" width="22" height="22" aria-hidden="true" focusable="false"><use href="#i-doc"/></svg></div>
+<div><h2>ارسال درخواست پروژه</h2><p>پاسخ‌گویی پس از بررسی (مشاوره رایگان)</p></div>
+</div>
+<p class="form-intro">هر چه جزئیات بیشتری ارسال کنید، بررسی دقیق‌تر و سریع‌تر انجام می‌شه. نوع پروژه، قابلیت‌های مورد نیاز و نمونه‌های مشابه کمک زیادی می‌کنه. پس از ارسال و بررسی، برای ادامه هماهنگ می‌کنیم.</p>
+
+<form id="projectForm" novalidate>
+<div class="hp" aria-hidden="true"><label>وبسایت (این فیلد را خالی بگذارید)<input type="text" name="website_url" id="pf-website" tabindex="-1" autocomplete="off"></label></div>
+<div class="form-row">
+<div class="form-group"><label class="form-label" for="pf-name">نام <span class="req" aria-hidden="true">*</span></label><input class="form-input" type="text" id="pf-name" name="name" required autocomplete="name" placeholder="نام خود را وارد کنید" maxlength="200" aria-describedby="err-name"><p class="field-error" id="err-name"></p></div>
+<div class="form-group"><label class="form-label" for="pf-contact-method">روش تماس <span class="req" aria-hidden="true">*</span></label><select class="form-select" id="pf-contact-method" name="contact_method" required aria-describedby="err-method"><option value="">انتخاب کنید...</option><option value="telegram">تلگرام</option><option value="bale">بله</option><option value="whatsapp">واتساپ</option><option value="email">ایمیل</option><option value="phone">تلفن</option><option value="other">سایر</option></select><p class="field-error" id="err-method"></p></div>
+</div>
+<div class="form-row">
+<div class="form-group"><label class="form-label" for="pf-contact-value">اطلاعات تماس <span class="req" aria-hidden="true">*</span></label><input class="form-input" type="text" id="pf-contact-value" name="contact_value" required dir="auto" placeholder="آیدی، شماره یا ایمیل" maxlength="500" aria-describedby="err-value"><p class="field-error" id="err-value"></p></div>
+<div class="form-group"><label class="form-label" for="pf-project-type">نوع پروژه <span class="req" aria-hidden="true">*</span></label><select class="form-select" id="pf-project-type" name="project_type" required aria-describedby="err-type"><option value="">انتخاب کنید...</option><option value="telegram_bot">ربات تلگرام</option><option value="bale_bot">ربات بله</option><option value="rubika_bot">ربات روبیکا</option><option value="discord_bot">ربات دیسکورد</option><option value="mini_app">مینی‌اپ تلگرام</option><option value="website">طراحی وبسایت</option><option value="automation">اتوماسیون / اتصال API</option><option value="other">سایر</option></select><p class="field-error" id="err-type"></p></div>
+</div>
+<div class="form-group"><label class="form-label" for="pf-budget">بودجه تقریبی <span class="text-muted">(اختیاری)</span></label><select class="form-select" id="pf-budget" name="budget"><option value="">انتخاب کنید...</option><option value="هنوز مشخص نیست">هنوز مشخص نیست — نیاز به مشاوره</option><option value="زیر ۳ میلیون تومان">زیر ۳ میلیون تومان</option><option value="۳ تا ۷ میلیون تومان">۳ تا ۷ میلیون تومان</option><option value="۷ تا ۱۵ میلیون تومان">۷ تا ۱۵ میلیون تومان</option><option value="بیش از ۱۵ میلیون تومان">بیش از ۱۵ میلیون تومان</option></select></div>
+<div class="form-group"><label class="form-label" for="pf-description">توضیحات پروژه <span class="req" aria-hidden="true">*</span></label><textarea class="form-textarea" id="pf-description" name="description" required placeholder="جزئیات پروژه، قابلیت‌های مورد نیاز، و هر اطلاعات مفید دیگر..." maxlength="5000" aria-describedby="err-desc descCount"></textarea><div class="form-hint"><span>حداقل ۱۰ کاراکتر</span><span id="descCount" dir="ltr">0 / 5000</span></div><p class="field-error" id="err-desc"></p></div>
+<div class="form-message" id="formMessage" role="alert"></div>
+<button type="submit" id="submitBtn" class="btn btn--primary btn--lg btn--block"><span id="submitText">ارسال درخواست پروژه <svg class="icon" width="18" height="18" aria-hidden="true" focusable="false"><use href="#i-arrow-left"/></svg></span><span id="submitLoading" hidden>در حال ارسال...</span></button>
+</form>
+
+<div class="form-success" id="formSuccess" tabindex="-1" role="status" hidden>
+<div class="value-icon tone-green"><svg class="icon" width="30" height="30" aria-hidden="true" focusable="false"><use href="#i-circle-check"/></svg></div>
+<h2>درخواست شما ثبت شد</h2>
+<p id="successText">اطلاعات پروژه دریافت شد و پس از بررسی با شما تماس می‌گیرم.</p>
+<div class="btn-row"><a href="/" class="btn btn--outline">بازگشت به صفحه اصلی</a><button type="button" class="btn btn--outline" id="anotherRequest">ثبت درخواست دیگر</button></div>
+</div>
+</div>
+
+<div class="next-steps reveal">
+<h3>بعد از ارسال درخواست چه اتفاقی می‌افتد؟</h3>
+<ol>
+<li class="step-line"><span class="step-num">۱</span> درخواست شما بررسی می‌شه و پس از آن برای ادامه هماهنگ می‌کنیم.</li>
+<li class="step-line"><span class="step-num">۲</span> جزئیات فنی و زمان‌بندی تقریبی رو باهاتون در میون می‌ذارم.</li>
+<li class="step-line"><span class="step-num">۳</span> بعد از تایید، پروژه شروع می‌شه.</li>
+</ol>
+</div>
+
+<div class="or-divider" role="separator"><span>یا از روش‌های زیر استفاده کنید</span></div>
+
+<div class="grid-2 reveal">
+<div class="card contact-card">
+<div class="round-icon round-icon--lg"><svg class="icon" width="28" height="28" aria-hidden="true" focusable="false"><use href="#i-chat"/></svg></div>
+<h3>مشاوره در بله</h3>
+<p>ارتباط مستقیم با توسعه‌دهنده — پاسخ‌گویی پس از بررسی</p>
+<a href="https://ble.ir/botsdeveloper" target="_blank" rel="noopener noreferrer" class="btn btn--primary">ارسال پیام <svg class="icon" width="18" height="18" aria-hidden="true" focusable="false"><use href="#i-arrow-left"/></svg></a>
+</div>
+<div class="card contact-card">
+<div class="round-icon round-icon--lg"><svg class="icon" width="28" height="28" aria-hidden="true" focusable="false"><use href="#i-send"/></svg></div>
+<h3>مشاوره در تلگرام</h3>
+<p>مشاوره و بررسی پروژه از طریق تلگرام</p>
+<a href="https://t.me/VipBotDeveloper" target="_blank" rel="noopener noreferrer" class="btn btn--outline">ارسال پیام</a>
+</div>
+</div>
+
+</div></section>
