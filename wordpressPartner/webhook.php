@@ -143,6 +143,29 @@ function sendProductCard(int|string $chatId, array $product, string $token, stri
     }
 }
 
+function editCallbackMessage(array $callback, string $text, string $token, string $apiBase, ?array $keyboard = null, string $parseMode = 'Markdown'): array
+{
+    $message = $callback['message'] ?? [];
+    $chatId = $message['chat']['id'] ?? null;
+    $messageId = $message['message_id'] ?? null;
+    if ($chatId === null || $messageId === null) {
+        botLog('ERROR: callback message identifiers are missing; cannot edit message.');
+        return ['ok' => false, 'description' => 'Callback message identifiers are missing'];
+    }
+    $payload = ['chat_id' => $chatId, 'message_id' => $messageId, 'text' => $text, 'parse_mode' => $parseMode, 'disable_web_page_preview' => true];
+    if ($keyboard !== null) $payload['reply_markup'] = ['inline_keyboard' => $keyboard];
+    return apiCall('editMessageText', $payload, $token, $apiBase);
+}
+
+function orderStatusLabel(string $status): string
+{
+    return [
+        'awaiting_payment' => 'در انتظار پرداخت',
+        'awaiting_receipt' => 'در انتظار ارسال رسید',
+        'receipt_received_demo' => 'رسید دریافت شد (نمایشی)',
+    ][$status] ?? 'در حال بررسی';
+}
+
 function loadData(string $path): array
 {
     if (!is_file($path)) {
@@ -197,37 +220,66 @@ if (isset($update['callback_query']) && is_array($update['callback_query'])) {
     }
     // Welcome-screen buttons run the demo flow; no real payment is processed.
     if ($callbackData === 'demo_catalog') {
-        sendProductCard($chatId, $products[4], $token, $apiBase, sizeKeyboard($products[4]));
+        $product = $products[4];
+        $catalogText = "🛍 *" . $product['name'] . "*\\n"
+            . $product['collection'] . "\\n\\n"
+            . $product['description'] . "\\n\\n"
+            . '*قیمت:* ' . number_format((int)$product['price']) . ' ' . $product['currency'] . "\\n"
+            . '*سایزهای قابل انتخاب:* ' . implode('، ', $product['sizes']) . "\\n\\n"
+            . '[مشاهده تصویر محصول](' . $product['image'] . ')';
+        editCallbackMessage($callback, $catalogText, $token, $apiBase, sizeKeyboard($product));
         exit;
     }
     if ($callbackData === 'demo_orders') {
         $userOrders = [];
         foreach (($data['orders'] ?? []) as $order) {
-            if ((string)($order['user_id'] ?? '') === $userId) {
-                $userOrders[] = $order;
-            }
+            if ((string)($order['user_id'] ?? '') === $userId) $userOrders[] = $order;
         }
         if (!$userOrders) {
-            sendMessage($chatId, 'هنوز سفارش نمایشی برای شما ثبت نشده است.', $token, $apiBase);
+            editCallbackMessage($callback, '📦 *سفارش‌های شما*\\n\\nهنوز سفارشی برای شما ثبت نشده است.', $token, $apiBase, [
+                [['text' => '↩️ منوی اصلی', 'callback_data' => 'restart']],
+            ]);
         } else {
-            $ordersText = "📦 *سفارش‌های نمایشی شما*\\n\\n";
+            $rows = [];
             foreach (array_slice($userOrders, -10) as $order) {
-                $ordersText .= '*شماره:* ' . htmlspecialchars((string)$order['order_id'], ENT_QUOTES, 'UTF-8')
-                    . " | *سایز:* " . htmlspecialchars((string)$order['size'], ENT_QUOTES, 'UTF-8')
-                    . " | *وضعیت:* " . htmlspecialchars((string)$order['status'], ENT_QUOTES, 'UTF-8') . "\\n";
+                $orderId = (string)($order['order_id'] ?? '');
+                $rows[] = [['text' => '🧾 ' . $orderId . ' | سایز ' . (string)($order['size'] ?? '-'), 'callback_data' => 'order_' . $orderId]];
             }
-            sendMessage($chatId, $ordersText, $token, $apiBase, null, 'Markdown');
+            $rows[] = [['text' => '↩️ منوی اصلی', 'callback_data' => 'restart']];
+            editCallbackMessage($callback, '📦 *سفارش‌های شما*\\n\\nبرای مشاهده جزئیات، یک سفارش را انتخاب کنید:', $token, $apiBase, $rows);
         }
         exit;
     }
+    if (str_starts_with($callbackData, 'order_')) {
+        $orderId = substr($callbackData, 6);
+        $order = $data['orders'][$orderId] ?? null;
+        if (!is_array($order) || (string)($order['user_id'] ?? '') !== $userId) {
+            editCallbackMessage($callback, 'این سفارش پیدا نشد.', $token, $apiBase, [
+                [['text' => '↩️ بازگشت به سفارش‌ها', 'callback_data' => 'demo_orders']],
+            ]);
+            exit;
+        }
+        $detail = "🧾 *جزئیات سفارش*\\n\\n"
+            . '*شماره سفارش:* ' . htmlspecialchars($orderId, ENT_QUOTES, 'UTF-8') . "\\n"
+            . '*محصول:* ' . htmlspecialchars((string)($order['product_name'] ?? '-'), ENT_QUOTES, 'UTF-8') . "\\n"
+            . '*سایز:* ' . htmlspecialchars((string)($order['size'] ?? '-'), ENT_QUOTES, 'UTF-8') . "\\n"
+            . '*مبلغ:* ' . number_format((int)($order['amount'] ?? 0)) . ' ' . htmlspecialchars((string)($order['currency'] ?? 'تومان'), ENT_QUOTES, 'UTF-8') . "\\n"
+            . '*وضعیت:* ' . orderStatusLabel((string)($order['status'] ?? '')) . "\\n"
+            . '*تاریخ ثبت:* ' . htmlspecialchars(substr((string)($order['created_at'] ?? ''), 0, 10), ENT_QUOTES, 'UTF-8');
+        editCallbackMessage($callback, $detail, $token, $apiBase, [
+            [['text' => '↩️ بازگشت به سفارش‌ها', 'callback_data' => 'demo_orders']],
+            [['text' => '🏠 منوی اصلی', 'callback_data' => 'restart']],
+        ]);
+        exit;
+    }
     if ($callbackData === 'demo_support') {
-        sendMessage($chatId, 'برای پشتیبانی و سفارش ربات مشابه، به @botsdeveloper پیام دهید.', $token, $apiBase);
+        editCallbackMessage($callback, 'برای پشتیبانی و سفارش ربات مشابه، به @botsdeveloper پیام دهید.', $token, $apiBase);
         exit;
     }
     if ($callbackData === 'restart') {
         unset($data['users'][$userId]);
         saveData($storagePath, $data);
-        sendMessage($chatId, "سلام! به فروشگاه نمایشی بازوپرداز خوش آمدید.\n\nبرای آشنایی با امکانات فروشگاه، از گزینه‌های نمایشی زیر استفاده کنید.", $token, $apiBase, [
+        editCallbackMessage($callback, "سلام! به فروشگاه نمایشی بازوپرداز خوش آمدید.\n\nبرای آشنایی با امکانات فروشگاه، از گزینه‌های نمایشی زیر استفاده کنید.", $token, $apiBase, [
             [['text' => '🛍 مشاهده فروشگاه', 'callback_data' => 'demo_catalog'], ['text' => '📦 سفارش‌های من', 'callback_data' => 'demo_orders']],
             [['text' => '💬 پشتیبانی', 'callback_data' => 'demo_support']],
         ]);
@@ -237,13 +289,13 @@ if (isset($update['callback_query']) && is_array($update['callback_query'])) {
         $productId = (int)$match[1];
         $size = $match[2];
         if (!isset($products[$productId]) || !in_array($size, $products[$productId]['sizes'], true)) {
-            sendMessage($chatId, 'این انتخاب معتبر نیست. لطفاً دوباره محصول را انتخاب کنید.', $token, $apiBase);
+            editCallbackMessage($callback, 'این انتخاب معتبر نیست. لطفاً دوباره محصول را انتخاب کنید.', $token, $apiBase);
             exit;
         }
         $product = $products[$productId];
         $data['users'][$userId] = ['chat_id' => $chatId, 'product_id' => $productId, 'size' => $size, 'stage' => 'review', 'updated_at' => date(DATE_ATOM)];
         saveData($storagePath, $data);
-        sendMessage($chatId, orderSummary($product, $size), $token, $apiBase, [[
+        editCallbackMessage($callback, orderSummary($product, $size), $token, $apiBase, [[
             ['text' => '✅ تأیید سفارش', 'callback_data' => 'confirm_order'],
             ['text' => '↩️ تغییر سایز', 'callback_data' => 'change_size'],
         ]], 'Markdown');
@@ -251,7 +303,7 @@ if (isset($update['callback_query']) && is_array($update['callback_query'])) {
     }
     $userState = $data['users'][$userId] ?? null;
     if ($callbackData === 'change_size') {
-        sendMessage($chatId, 'لطفاً سایز موردنظرتان را انتخاب کنید:', $token, $apiBase, sizeKeyboard($products[4]));
+        editCallbackMessage($callback, 'لطفاً سایز موردنظرتان را انتخاب کنید:', $token, $apiBase, sizeKeyboard($products[4]));
         exit;
     }
     if ($callbackData === 'confirm_order' && is_array($userState) && ($userState['stage'] ?? '') === 'review') {
@@ -272,7 +324,7 @@ if (isset($update['callback_query']) && is_array($update['callback_query'])) {
             . '*محصول:* ' . htmlspecialchars($product['name'], ENT_QUOTES, 'UTF-8') . "\n"
             . '*سایز:* ' . htmlspecialchars((string)$userState['size'], ENT_QUOTES, 'UTF-8') . "\n\n"
             . 'برای ادامه، دکمه «پرداخت / ارسال رسید» را بزنید. در این نسخه نمایشی، پرداخت آنلاین متصل نیست و رسید به‌صورت دستی بررسی می‌شود.';
-        sendMessage($chatId, $payText, $token, $apiBase, [
+        editCallbackMessage($callback, $payText, $token, $apiBase, [
             [['text' => '💳 پرداخت / ارسال رسید', 'callback_data' => 'pay_' . $orderId]],
             [['text' => 'لغو / شروع دوباره', 'callback_data' => 'restart']],
         ], 'Markdown');
@@ -282,20 +334,20 @@ if (isset($update['callback_query']) && is_array($update['callback_query'])) {
         $orderId = substr($callbackData, 4);
         $order = $data['orders'][$orderId] ?? null;
         if (!is_array($order) || (string)$order['user_id'] !== $userId) {
-            sendMessage($chatId, 'سفارش فعالی برای این دکمه پیدا نشد. لطفاً از ابتدا شروع کنید.', $token, $apiBase);
+            editCallbackMessage($callback, 'سفارش فعالی برای این دکمه پیدا نشد. لطفاً از ابتدا شروع کنید.', $token, $apiBase);
             exit;
         }
         $data['users'][$userId]['stage'] = 'awaiting_receipt';
         $data['users'][$userId]['updated_at'] = date(DATE_ATOM);
         $data['orders'][$orderId]['status'] = 'awaiting_receipt';
         saveData($storagePath, $data);
-        sendMessage($chatId, "لطفاً تصویر رسید پرداخت را ارسال بفرمایید.\n\n"
+        editCallbackMessage($callback, "لطفاً تصویر رسید پرداخت را ارسال بفرمایید.\n\n"
             . '*مبلغ رسید:* ' . number_format((int)$order['amount']) . ' ' . $order['currency'] . "\n"
             . '*شماره سفارش:* ' . $orderId . "\n\n"
             . 'پس از دریافت تصویر، سفارش در این نسخه نمایشی ثبت می‌شود.', $token, $apiBase, null, 'Markdown');
         exit;
     }
-    sendMessage($chatId, 'برای ادامه، از دکمه‌های همین گفتگو استفاده کنید یا /start را بفرستید.', $token, $apiBase);
+    editCallbackMessage($callback, 'برای ادامه، از دکمه‌های همین گفتگو استفاده کنید یا /start را بفرستید.', $token, $apiBase);
     exit;
 }
 
