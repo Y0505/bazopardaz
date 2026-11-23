@@ -4,52 +4,111 @@ declare(strict_types=1);
 /**
  * WordPressPartner Rubika adapter
  * Native PHP only. Independent from the Bale webhook.
- * Configure secrets in the private config.php outside public_html.
+ * Diagnostic logging is written to webhook-debug.log.
  */
 
-$configFile = dirname(__DIR__, 2) . '/bot/wordpressPartnerRubika/config.php';
-if (!is_file($configFile)) {
-    http_response_code(500);
-    exit('Missing private config.php');
+define('RUBIKA_DEBUG_LOG', __DIR__ . '/webhook-debug.log');
+
+function rubikaDebug(string $event, array $context = []): void {
+    $record = [
+        'time' => date('Y-m-d H:i:s'),
+        'event' => $event,
+        'context' => $context,
+    ];
+    $line = json_encode($record, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    if ($line !== false) {
+        @file_put_contents(RUBIKA_DEBUG_LOG, $line . PHP_EOL, FILE_APPEND | LOCK_EX);
+    }
 }
-$config = require $configFile;
+
+rubikaDebug('01_request_received', [
+    'method' => $_SERVER['REQUEST_METHOD'] ?? 'UNKNOWN',
+    'uri_path' => parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH),
+    'content_length' => $_SERVER['CONTENT_LENGTH'] ?? null,
+    'content_type' => $_SERVER['CONTENT_TYPE'] ?? null,
+]);
+
+set_error_handler(function (int $severity, string $message, string $file, int $line): bool {
+    rubikaDebug('php_warning_or_error', [
+        'severity' => $severity,
+        'message' => $message,
+        'file' => basename($file),
+        'line' => $line,
+    ]);
+    return false;
+});
+
+register_shutdown_function(function (): void {
+    $error = error_get_last();
+    if ($error !== null && in_array($error['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR], true)) {
+        rubikaDebug('php_fatal_shutdown', [
+            'type' => $error['type'],
+            'message' => $error['message'],
+            'file' => basename($error['file']),
+            'line' => $error['line'],
+        ]);
+    } else {
+        rubikaDebug('request_shutdown', ['last_error' => $error['type'] ?? null]);
+    }
+});
 
 header('Content-Type: text/plain; charset=utf-8');
 
-function rubikaLog(string $message): void {
-    $file = __DIR__ . '/webhook-log.php';
-    if (!is_file($file)) {
-        @file_put_contents($file, "<?php http_response_code(404); exit; ?>\n", LOCK_EX);
-    }
-    @file_put_contents($file, '[' . date('Y-m-d H:i:s') . '] ' . $message . PHP_EOL, FILE_APPEND | LOCK_EX);
+$configFile = dirname(__DIR__, 2) . '/bot/wordpressPartnerRubika/config.php';
+rubikaDebug('02_config_check', ['path_exists' => is_file($configFile)]);
+
+if (!is_file($configFile)) {
+    rubikaDebug('config_missing');
+    http_response_code(500);
+    exit('Missing private config.php');
 }
 
+try {
+    $config = require $configFile;
+} catch (Throwable $e) {
+    rubikaDebug('config_load_exception', ['message' => $e->getMessage()]);
+    http_response_code(500);
+    exit('Could not load private config.php');
+}
+
+rubikaDebug('03_config_loaded', [
+    'bot_token_present' => !empty($config['bot_token']),
+    'admin_chat_id_present' => !empty($config['admin_chat_id']),
+]);
+
 if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
+    rubikaDebug('request_not_post');
     http_response_code(405);
     header('Allow: POST');
     exit('Rubika webhook is ready.');
 }
 
-$secret = (string)($config['webhook_secret'] ?? '');
-if ($secret === '' || !hash_equals($secret, (string)($_GET['key'] ?? ''))) {
-    http_response_code(403);
-    exit('Forbidden');
-}
-
 $raw = file_get_contents('php://input');
+rubikaDebug('04_body_received', ['bytes' => strlen((string)$raw)]);
+
 $payload = json_decode($raw ?: '', true);
 if (!is_array($payload)) {
+    rubikaDebug('json_decode_failed', ['json_error' => json_last_error_msg()]);
     http_response_code(400);
     exit('Invalid JSON');
 }
+
+rubikaDebug('05_json_decoded', [
+    'root_keys' => array_keys($payload),
+    'update_keys' => is_array($payload['update'] ?? null) ? array_keys($payload['update']) : [],
+    'inline_keys' => is_array($payload['inline_message'] ?? null) ? array_keys($payload['inline_message']) : [],
+]);
+
+// Acknowledge the webhook after the payload has been safely received and decoded.
 http_response_code(200);
 echo 'OK';
 
 $token = trim((string)($config['bot_token'] ?? ''));
 if ($token === '') {
-    rubikaLog('ERROR: bot_token is empty');
+    rubikaDebug('06_missing_bot_token');
     exit;
 }
+rubikaDebug('06_bot_token_ready');
 $apiBase = 'https://botapi.rubika.ir/v3/' . rawurlencode($token) . '/';
 $adminChatId = (string)($config['admin_chat_id'] ?? '');
 $dataFile = __DIR__ . '/data.json';
@@ -67,23 +126,26 @@ function rubikaApi(string $method, array $params = []): array {
         CURLOPT_SSL_VERIFYPEER => true,
         CURLOPT_SSL_VERIFYHOST => 2,
     ]);
+    rubikaDebug('api_request_started', ['method' => $method]);
     $response = curl_exec($ch);
     $error = curl_error($ch);
     $status = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
     if ($response === false) {
-        rubikaLog('API transport error method=' . $method . ' error=' . $error);
+        rubikaDebug('api_transport_error', ['method' => $method, 'error' => $error]);
         return [];
     }
     $decoded = json_decode($response, true);
     if (!is_array($decoded) || $status < 200 || $status >= 300 || (($decoded['status'] ?? '') !== 'OK')) {
-        rubikaLog('API error method=' . $method . ' http=' . $status . ' response=' . substr((string)$response, 0, 500));
+        rubikaDebug('api_response_error', ['method' => $method, 'http' => $status, 'response_excerpt' => substr((string)$response, 0, 300)]);
         return is_array($decoded) ? $decoded : [];
     }
+    rubikaDebug('api_response_ok', ['method' => $method, 'http' => $status]);
     return $decoded;
 }
 
 function sendText(string $chatId, string $text, ?array $keyboard = null): void {
+    rubikaDebug('send_message_attempt', ['chat_id_present' => $chatId !== '', 'text_length' => mb_strlen($text, 'UTF-8'), 'keyboard' => $keyboard !== null]);
     $args = ['chat_id' => $chatId, 'text' => $text];
     if ($keyboard !== null) $args['inline_keypad'] = ['rows' => $keyboard];
     rubikaApi('sendMessage', $args);
@@ -139,6 +201,7 @@ $products = [
 ];
 
 $data = readData($dataFile);
+rubikaDebug('07_data_loaded', ['users_count' => count($data['users'] ?? []), 'orders_count' => count($data['orders'] ?? [])]);
 
 // Rubika sends normal messages under update.new_message and keypad clicks
 // under inline_message. Keep extraction tolerant of the documented envelope.
@@ -151,13 +214,24 @@ $text = trim((string)($message['text'] ?? $inline['text'] ?? ''));
 $messageId = (string)($message['message_id'] ?? $inline['message_id'] ?? '');
 $buttonId = (string)($inline['aux_data']['button_id'] ?? '');
 
+rubikaDebug('08_update_parsed', [
+    'update_type' => $update['type'] ?? null,
+    'message_keys' => is_array($message) ? array_keys($message) : [],
+    'inline_type' => $inline['type'] ?? null,
+    'chat_id_present' => $chatId !== '',
+    'user_id_present' => $userId !== '',
+    'text' => mb_substr($text, 0, 80, 'UTF-8'),
+    'button_id' => $buttonId,
+]);
+
 if ($chatId === '') {
-    rubikaLog('Ignored update without chat_id');
+    rubikaDebug('update_ignored_missing_chat_id');
     exit;
 }
 if ($userId === '') $userId = $chatId;
 
 if ($buttonId !== '') {
+    rubikaDebug('09_button_update', ['button_id' => $buttonId]);
     if ($buttonId === 'restart') {
         unset($data['users'][$userId]);
         writeData($dataFile, $data);
@@ -243,6 +317,7 @@ if ($buttonId !== '') {
 // /start can optionally carry the same product4_size43 payload when the
 // Rubika client forwards it as "/start product4_size43".
 if (preg_match('/^\/?start(?:\s+(.+))?$/u', $text, $startMatch)) {
+    rubikaDebug('10_start_command_detected');
     $deepLink = trim((string)($startMatch[1] ?? ''));
     unset($data['users'][$userId]);
     if ($deepLink !== '' && preg_match('/^product(\d+)_size(\d+)$/', $deepLink, $m)) {
@@ -303,6 +378,7 @@ if (is_array($file) || str_contains(strtolower((string)($message['mime_type'] ??
 }
 
 if ($text !== '') {
+    rubikaDebug('11_other_text_received', ['text' => mb_substr($text, 0, 80, 'UTF-8')]);
     $state = $data['users'][$userId] ?? [];
     if (($state['stage'] ?? '') === 'awaiting_receipt') {
         sendText($chatId, 'لطفاً تصویر رسید را به‌صورت عکس ارسال کنید.');
