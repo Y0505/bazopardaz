@@ -221,11 +221,11 @@ if (isset($update['callback_query']) && is_array($update['callback_query'])) {
     // Welcome-screen buttons run the demo flow; no real payment is processed.
     if ($callbackData === 'demo_catalog') {
         $product = $products[4];
-        $catalogText = "🛍 *" . $product['name'] . "*\\n"
-            . $product['collection'] . "\\n\\n"
-            . $product['description'] . "\\n\\n"
-            . '*قیمت:* ' . number_format((int)$product['price']) . ' ' . $product['currency'] . "\\n"
-            . '*سایزهای قابل انتخاب:* ' . implode('، ', $product['sizes']) . "\\n\\n"
+        $catalogText = "🛍 *" . $product['name'] . "*\n"
+            . $product['collection'] . "\n\n"
+            . $product['description'] . "\n\n"
+            . '*قیمت:* ' . number_format((int)$product['price']) . ' ' . $product['currency'] . "\n"
+            . '*سایزهای قابل انتخاب:* ' . implode('، ', $product['sizes']) . "\n\n"
             . '[مشاهده تصویر محصول](' . $product['image'] . ')';
         editCallbackMessage($callback, $catalogText, $token, $apiBase, sizeKeyboard($product));
         exit;
@@ -236,7 +236,7 @@ if (isset($update['callback_query']) && is_array($update['callback_query'])) {
             if ((string)($order['user_id'] ?? '') === $userId) $userOrders[] = $order;
         }
         if (!$userOrders) {
-            editCallbackMessage($callback, '📦 *سفارش‌های شما*\\n\\nهنوز سفارشی برای شما ثبت نشده است.', $token, $apiBase, [
+            editCallbackMessage($callback, '📦 *سفارش‌های شما*\n\nهنوز سفارشی برای شما ثبت نشده است.', $token, $apiBase, [
                 [['text' => '↩️ منوی اصلی', 'callback_data' => 'restart']],
             ]);
         } else {
@@ -246,7 +246,7 @@ if (isset($update['callback_query']) && is_array($update['callback_query'])) {
                 $rows[] = [['text' => '🧾 ' . $orderId . ' | سایز ' . (string)($order['size'] ?? '-'), 'callback_data' => 'order_' . $orderId]];
             }
             $rows[] = [['text' => '↩️ منوی اصلی', 'callback_data' => 'restart']];
-            editCallbackMessage($callback, '📦 *سفارش‌های شما*\\n\\nبرای مشاهده جزئیات، یک سفارش را انتخاب کنید:', $token, $apiBase, $rows);
+            editCallbackMessage($callback, '📦 *سفارش‌های شما*\n\nبرای مشاهده جزئیات، یک سفارش را انتخاب کنید:', $token, $apiBase, $rows);
         }
         exit;
     }
@@ -259,12 +259,12 @@ if (isset($update['callback_query']) && is_array($update['callback_query'])) {
             ]);
             exit;
         }
-        $detail = "🧾 *جزئیات سفارش*\\n\\n"
-            . '*شماره سفارش:* ' . htmlspecialchars($orderId, ENT_QUOTES, 'UTF-8') . "\\n"
-            . '*محصول:* ' . htmlspecialchars((string)($order['product_name'] ?? '-'), ENT_QUOTES, 'UTF-8') . "\\n"
-            . '*سایز:* ' . htmlspecialchars((string)($order['size'] ?? '-'), ENT_QUOTES, 'UTF-8') . "\\n"
-            . '*مبلغ:* ' . number_format((int)($order['amount'] ?? 0)) . ' ' . htmlspecialchars((string)($order['currency'] ?? 'تومان'), ENT_QUOTES, 'UTF-8') . "\\n"
-            . '*وضعیت:* ' . orderStatusLabel((string)($order['status'] ?? '')) . "\\n"
+        $detail = "🧾 *جزئیات سفارش*\n\n"
+            . '*شماره سفارش:* ' . htmlspecialchars($orderId, ENT_QUOTES, 'UTF-8') . "\n"
+            . '*محصول:* ' . htmlspecialchars((string)($order['product_name'] ?? '-'), ENT_QUOTES, 'UTF-8') . "\n"
+            . '*سایز:* ' . htmlspecialchars((string)($order['size'] ?? '-'), ENT_QUOTES, 'UTF-8') . "\n"
+            . '*مبلغ:* ' . number_format((int)($order['amount'] ?? 0)) . ' ' . htmlspecialchars((string)($order['currency'] ?? 'تومان'), ENT_QUOTES, 'UTF-8') . "\n"
+            . '*وضعیت:* ' . orderStatusLabel((string)($order['status'] ?? '')) . "\n"
             . '*تاریخ ثبت:* ' . htmlspecialchars(substr((string)($order['created_at'] ?? ''), 0, 10), ENT_QUOTES, 'UTF-8');
         editCallbackMessage($callback, $detail, $token, $apiBase, [
             [['text' => '↩️ بازگشت به سفارش‌ها', 'callback_data' => 'demo_orders']],
