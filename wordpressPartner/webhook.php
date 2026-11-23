@@ -195,8 +195,33 @@ if (isset($update['callback_query']) && is_array($update['callback_query'])) {
     if ($chatId === null || $userId === '') {
         exit;
     }
-    // Welcome-screen demo buttons are intentionally inert.
-    if (in_array($callbackData, ['demo_catalog', 'demo_orders', 'demo_support'], true)) {
+    // Welcome-screen buttons run the demo flow; no real payment is processed.
+    if ($callbackData === 'demo_catalog') {
+        sendProductCard($chatId, $products[4], $token, $apiBase, sizeKeyboard($products[4]));
+        exit;
+    }
+    if ($callbackData === 'demo_orders') {
+        $userOrders = [];
+        foreach (($data['orders'] ?? []) as $order) {
+            if ((string)($order['user_id'] ?? '') === $userId) {
+                $userOrders[] = $order;
+            }
+        }
+        if (!$userOrders) {
+            sendMessage($chatId, 'هنوز سفارش نمایشی برای شما ثبت نشده است.', $token, $apiBase);
+        } else {
+            $ordersText = "📦 *سفارش‌های نمایشی شما*\\n\\n";
+            foreach (array_slice($userOrders, -10) as $order) {
+                $ordersText .= '*شماره:* ' . htmlspecialchars((string)$order['order_id'], ENT_QUOTES, 'UTF-8')
+                    . " | *سایز:* " . htmlspecialchars((string)$order['size'], ENT_QUOTES, 'UTF-8')
+                    . " | *وضعیت:* " . htmlspecialchars((string)$order['status'], ENT_QUOTES, 'UTF-8') . "\\n";
+            }
+            sendMessage($chatId, $ordersText, $token, $apiBase, null, 'Markdown');
+        }
+        exit;
+    }
+    if ($callbackData === 'demo_support') {
+        sendMessage($chatId, 'برای پشتیبانی و سفارش ربات مشابه، به @botsdeveloper پیام دهید.', $token, $apiBase);
         exit;
     }
     if ($callbackData === 'restart') {
