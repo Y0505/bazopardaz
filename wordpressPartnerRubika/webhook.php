@@ -249,7 +249,9 @@ $chatId = (string)($payload['chat_id'] ?? $update['chat_id'] ?? $inline['chat_id
 $userId = (string)($message['sender_id'] ?? $inline['sender_id'] ?? '');
 $text = trim((string)($message['text'] ?? $inline['text'] ?? ''));
 $messageId = (string)($message['message_id'] ?? $inline['message_id'] ?? '');
-$buttonId = (string)($message['aux_data']['button_id'] ?? $inline['aux_data']['button_id'] ?? '');
+// button_id belongs to ReceiveInlineMessage events only.
+ // Normal messages may contain aux_data.button_id="start"; that is not a keypad click.
+$buttonId = (string)($inline['aux_data']['button_id'] ?? '');
 
 rubikaDebug('08_update_parsed', [
     'update_type' => $update['type'] ?? null,
