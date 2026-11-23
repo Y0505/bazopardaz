@@ -156,6 +156,39 @@ function sendText(string $chatId, string $text, ?array $keyboard = null): void {
     rubikaApi('sendMessage', $args);
 }
 
+/**
+ * Edit the bot message that contained the clicked inline button.
+ * Rubika exposes text and inline-keypad editing as separate API methods.
+ */
+function editButtonMessage(string $chatId, string $messageId, string $text, ?array $keyboard = null): void {
+    if ($messageId === '') {
+        rubikaDebug('edit_message_skipped_missing_message_id', ['chat_id_present' => $chatId !== '']);
+        sendText($chatId, $text, $keyboard);
+        return;
+    }
+
+    rubikaDebug('edit_message_attempt', [
+        'chat_id_present' => $chatId !== '',
+        'message_id' => $messageId,
+        'text_length' => strlen($text),
+        'keyboard' => $keyboard !== null,
+    ]);
+
+    rubikaApi('editMessageText', [
+        'chat_id' => $chatId,
+        'message_id' => $messageId,
+        'text' => $text,
+    ]);
+
+    if ($keyboard !== null) {
+        rubikaApi('editMessageKeypad', [
+            'chat_id' => $chatId,
+            'message_id' => $messageId,
+            'inline_keypad' => ['rows' => $keyboard],
+        ]);
+    }
+}
+
 function button(string $text, string $id): array {
     return ['id' => $id, 'type' => 'Simple', 'button_text' => $text];
 }
@@ -217,7 +250,7 @@ $chatId = (string)($payload['chat_id'] ?? $update['chat_id'] ?? $inline['chat_id
 $userId = (string)($message['sender_id'] ?? $inline['sender_id'] ?? '');
 $text = trim((string)($message['text'] ?? $inline['text'] ?? ''));
 $messageId = (string)($message['message_id'] ?? $inline['message_id'] ?? '');
-$buttonId = (string)($inline['aux_data']['button_id'] ?? '');
+$buttonId = (string)($message['aux_data']['button_id'] ?? $inline['aux_data']['button_id'] ?? '');
 
 rubikaDebug('08_update_parsed', [
     'update_type' => $update['type'] ?? null,
@@ -240,11 +273,11 @@ if ($buttonId !== '') {
     if ($buttonId === 'restart') {
         unset($data['users'][$userId]);
         writeData($dataFile, $data);
-        sendText($chatId, "سلام! به فروشگاه نمایشی بازوپرداز خوش آمدید.\n\nیکی از گزینه‌های زیر را انتخاب کنید.", menuKeyboard());
+        editButtonMessage($chatId, $messageId, "سلام! به فروشگاه نمایشی بازوپرداز خوش آمدید.\n\nیکی از گزینه‌های زیر را انتخاب کنید.", menuKeyboard());
         exit;
     }
     if ($buttonId === 'show_product') {
-        sendText($chatId,
+        editButtonMessage($chatId, $messageId,
             "🛍 {$products[4]['name']}\n"
             . "{$products[4]['collection']}\n\n"
             . "{$products[4]['description']}\n\n"
@@ -261,29 +294,29 @@ if ($buttonId !== '') {
             if ((string)($order['user_id'] ?? '') === $userId) $orders[] = $order;
         }
         if (!$orders) {
-            sendText($chatId, 'هنوز سفارشی برای شما ثبت نشده است.', menuKeyboard());
+            editButtonMessage($chatId, $messageId, 'هنوز سفارشی برای شما ثبت نشده است.', menuKeyboard());
         } else {
             $out = "📦 سفارش‌های شما\n\n";
             foreach (array_slice($orders, -10) as $order) {
                 $out .= $order['order_id'] . ' | ' . $order['product_name'] . ' | سایز ' . $order['size'] . ' | ' . $order['status'] . "\n";
             }
-            sendText($chatId, $out, menuKeyboard());
+            editButtonMessage($chatId, $messageId, $out, menuKeyboard());
         }
         exit;
     }
     if ($buttonId === 'support') {
-        sendText($chatId, 'برای پشتیبانی و سفارش ربات مشابه، به @botsdeveloper پیام دهید.', menuKeyboard());
+        editButtonMessage($chatId, $messageId, 'برای پشتیبانی و سفارش ربات مشابه، به @botsdeveloper پیام دهید.', menuKeyboard());
         exit;
     }
     if (preg_match('/^size_(\d+)_(\d+)$/', $buttonId, $m)) {
         $pid = (int)$m[1]; $size = $m[2];
         if (!isset($products[$pid]) || !in_array($size, $products[$pid]['sizes'], true)) {
-            sendText($chatId, 'انتخاب نامعتبر است. دوباره محصول را انتخاب کنید.', menuKeyboard());
+            editButtonMessage($chatId, $messageId, 'انتخاب نامعتبر است. دوباره محصول را انتخاب کنید.', menuKeyboard());
             exit;
         }
         $data['users'][$userId] = ['chat_id' => $chatId, 'product_id' => $pid, 'size' => $size, 'stage' => 'review'];
         writeData($dataFile, $data);
-        sendText($chatId, summary($products[$pid], $size), [
+        editButtonMessage($chatId, $messageId, summary($products[$pid], $size), [
             row([button('✅ تأیید سفارش', 'confirm_order')]),
             row([button('↩️ تغییر سایز', 'change_size'), button('لغو', 'restart')]),
         ]);
@@ -291,7 +324,7 @@ if ($buttonId !== '') {
     }
     $state = $data['users'][$userId] ?? [];
     if ($buttonId === 'change_size') {
-        sendText($chatId, 'لطفاً سایز موردنظرتان را انتخاب کنید:', sizeKeyboard($products[4]));
+        editButtonMessage($chatId, $messageId, 'لطفاً سایز موردنظرتان را انتخاب کنید:', sizeKeyboard($products[4]));
         exit;
     }
     if ($buttonId === 'confirm_order' && ($state['stage'] ?? '') === 'review') {
@@ -307,7 +340,7 @@ if ($buttonId !== '') {
             'created_at' => date(DATE_ATOM),
         ];
         writeData($dataFile, $data);
-        sendText($chatId,
+        editButtonMessage($chatId, $messageId,
             "سفارش شما با شماره {$orderId} آماده پرداخت است.\n\n"
             . 'مبلغ: ' . number_format($product['price']) . " {$product['currency']}\n"
             . "محصول: {$product['name']}\nسایز: {$state['size']}\n\n"
@@ -315,7 +348,7 @@ if ($buttonId !== '') {
         );
         exit;
     }
-    sendText($chatId, 'برای ادامه از دکمه‌های گفتگو استفاده کنید یا /start را بفرستید.');
+    editButtonMessage($chatId, $messageId, 'برای ادامه از دکمه‌های گفتگو استفاده کنید یا /start را بفرستید.');
     exit;
 }
 
