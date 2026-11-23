@@ -163,7 +163,6 @@ function sendText(string $chatId, string $text, ?array $keyboard = null): void {
 function editButtonMessage(string $chatId, string $messageId, string $text, ?array $keyboard = null): void {
     if ($messageId === '') {
         rubikaDebug('edit_message_skipped_missing_message_id', ['chat_id_present' => $chatId !== '']);
-        sendText($chatId, $text, $keyboard);
         return;
     }
 
