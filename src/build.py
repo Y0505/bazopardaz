@@ -4,12 +4,12 @@ Bazopardaz static site builder.
 
 Why this exists: header, footer, <head> boilerplate, icons and scripts used to be pasted
 into every page. Now they live once (src/partials, src/layout.html) and this script
-assembles the final, plain static HTML files into ../public_html.
+assembles the final, plain static HTML files into the repository root (the contents of the hosting public_html).
 
 Output URLs, canonical URLs and folder layout are exactly the same as the live site,
 so nothing about indexing changes. Needs only Python 3.8+, no packages.
 
-Usage:   python3 src/build.py
+Usage:   python src/build.py
 """
 import hashlib
 import html
@@ -18,7 +18,7 @@ import pathlib
 import re
 
 SRC = pathlib.Path(__file__).resolve().parent
-OUT = SRC.parent / "public_html"
+OUT = SRC.parent
 SITE = json.loads((SRC / "site.json").read_text(encoding="utf-8"))
 BASE = SITE["base"]
 ORG_ID, SITE_ID = BASE + "/#organization", BASE + "/#website"
