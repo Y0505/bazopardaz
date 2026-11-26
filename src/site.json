@@ -6,7 +6,7 @@
   "bale": "https://ble.ir/botsdeveloper",
   "telegram": "https://t.me/VipBotDeveloper",
   "default_og": "/images/og-image-1200.jpg",
-  "default_og_alt": "بازوپرداز؛ طراحی ربات تلگرام، ربات بله و وبسایت اختصاصی",
+  "default_og_alt": "بازوپرداز؛ طراحی ربات تلگرام، ربات بله، ربات روبیکا و وبسایت اختصاصی",
   "org_description": "طراحی و توسعه اختصاصی ربات تلگرام، ربات بله، ربات روبیکا، ربات دیسکورد، مینی‌اپ و وبسایت؛ با ارتباط مستقیم با توسعه‌دهنده.",
   "nav": [
     {"label": "خدمات", "href": "/services/"},
