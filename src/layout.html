@@ -7,13 +7,13 @@
 <meta name="description" content="{{description}}">
 <meta name="robots" content="{{robots}}">
 {{canonical_tag}}<meta name="theme-color" content="#0b0b14">
-<meta name="color-scheme" content="dark">
+<meta name="color-scheme" content="light dark">
 {{social_tags}}<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="48x48" href="/images/favicon-48x48.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
-<script>document.documentElement.className+=' js'</script>
+<script>(function(){var r=document.documentElement,t=null;try{t=localStorage.getItem('bp-theme')}catch(e){}if(t!=='light'&&t!=='dark'){t=window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'}r.setAttribute('data-theme',t);r.className+=' js'})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
