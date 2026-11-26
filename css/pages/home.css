@@ -23,6 +23,19 @@
   .home-hero .btn-row, .home-hero .trust-row, .home-platforms { justify-content: flex-start; }
 }
 
+/* Keep the desktop hero headline compact and readable in two lines */
+@media (min-width: 960px) {
+  .home-hero .hero-title { font-size: clamp(1.9rem, 2.65vw, 2.35rem); line-height: 1.5; }
+}
+
+.home-portfolio .portfolio-card-subtitle {
+  display: block;
+  margin-top: 5px;
+  color: var(--text-muted);
+  font-size: .82rem;
+  line-height: 1.5;
+}
+
 /* Portfolio: one wide featured project, then the rest; 5 cards fill the grid with no gaps */
 .home-portfolio .portfolio-card { display: flex; flex-direction: column; }
 .home-portfolio .portfolio-card-body { flex: 1; display: flex; flex-direction: column; }
